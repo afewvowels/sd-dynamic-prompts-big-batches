@@ -141,7 +141,7 @@ class Script(scripts.Script):
         jinja_help = jinja_html_path.open().read()
 
         with gr.Group(elem_id="dynamic-prompting"):
-            with gr.Accordion("Dynamic Prompts", open=False):
+            with gr.Accordion("Dynamic Prompts Big Batches", open=False):
                 is_enabled = gr.Checkbox(
                     label="Dynamic Prompts enabled",
                     value=True,
