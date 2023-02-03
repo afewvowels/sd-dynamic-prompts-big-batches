@@ -167,7 +167,7 @@ class Script(scripts.Script):
                     combinatorial_batches = gr.Slider(
                         label="Combinatorial batches",
                         minimum=1,
-                        maximum=10,
+                        maximum=100,
                         step=1,
                         value=1,
                         elem_id="combinatorial-times",
