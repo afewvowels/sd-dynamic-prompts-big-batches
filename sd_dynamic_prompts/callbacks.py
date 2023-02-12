@@ -1,7 +1,11 @@
+from __future__ import annotations
+
 import logging
 from pathlib import Path
+from typing import Any
 
 from modules import script_callbacks
+from modules.generation_parameters_copypaste import parse_generation_parameters
 from modules.script_callbacks import ImageSaveParams
 
 from sd_dynamic_prompts.ui.pnginfo_saver import PngInfoSaver, PromptTemplates
@@ -38,3 +42,22 @@ def register_prompt_writer(prompt_writer: PromptWriter) -> None:
         prompt_writer.write_prompts(prompt_filename)
 
     script_callbacks.on_before_image_saved(on_save)
+
+
+def register_on_infotext_pasted(pnginfo_saver: PngInfoSaver) -> None:
+    def on_infotext_pasted(infotext: str, parameters: dict[str, Any]) -> None:
+        new_parameters = {}
+        if "Prompt" in parameters and "Template:" in parameters["Prompt"]:
+            parameters = pnginfo_saver.strip_template_info(parameters)
+            new_parameters = parse_generation_parameters(parameters["Prompt"])
+        elif (
+            "Negative prompt" in parameters
+            and "Template:" in parameters["Negative prompt"]
+        ):
+            parameters = pnginfo_saver.strip_template_info(parameters)
+            new_parameters = parse_generation_parameters(parameters["Negative prompt"])
+            new_parameters["Negative prompt"] = new_parameters["Prompt"]
+            new_parameters["Prompt"] = parameters["Prompt"]
+        parameters.update(new_parameters)
+
+    script_callbacks.on_infotext_pasted(on_infotext_pasted)
